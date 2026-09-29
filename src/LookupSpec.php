@@ -11,6 +11,7 @@ use function array_keys;
 use function array_values;
 use function implode;
 use function in_array;
+use function preg_match;
 use function trim;
 
 final readonly class LookupSpec
@@ -205,6 +206,11 @@ final readonly class LookupSpec
         $normalized = trim($name);
         if ($normalized === '') {
             throw new InvalidArgumentException('Lookup ' . $kind . ' must not be empty.');
+        }
+
+        // Имя попадает в текст SQL: только идентификатор (`table`, `schema.table`), никаких кавычек и выражений.
+        if (preg_match('/^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)?$/', $normalized) !== 1) {
+            throw new InvalidArgumentException('Lookup ' . $kind . ' "' . $normalized . '" is not a valid identifier.');
         }
 
         return $normalized;

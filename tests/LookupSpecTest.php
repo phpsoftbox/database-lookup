@@ -67,4 +67,32 @@ final class LookupSpecTest extends TestCase
 
         $lookup->warmupKeyColumns();
     }
+
+    /**
+     * Проверим, что имя колонки с кавычками или выражением отклоняется: оно попадает в текст SQL.
+     *
+     * @see LookupSpec::where()
+     */
+    #[Test]
+    public function rejectsNonIdentifierColumn(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        LookupSpec::forTable('shipment_products')->where('"tenant_id" = 1 OR "id"', 5);
+    }
+
+    /**
+     * Проверим, что имя таблицы со схемой принимается, а с пробелом — нет.
+     *
+     * @see LookupSpec::forTable()
+     */
+    #[Test]
+    public function acceptsSchemaQualifiedTableOnly(): void
+    {
+        self::assertInstanceOf(LookupSpec::class, LookupSpec::forTable('public.shipment_products'));
+
+        $this->expectException(InvalidArgumentException::class);
+
+        LookupSpec::forTable('shipment_products; DROP TABLE users');
+    }
 }

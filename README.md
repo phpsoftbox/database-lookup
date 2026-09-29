@@ -42,5 +42,9 @@ final class ShipmentProductLookups
 Такой подход оставляет `LookupSpec` закрытым и предсказуемым value object, но позволяет
 централизовать таблицы, колонки и scoped-условия.
 
+Имена таблицы и колонок попадают в текст SQL, поэтому `LookupSpec` принимает только идентификаторы (`table`,
+`schema.table`, `column`); кавычки, пробелы и выражения — `InvalidArgumentException`. Значения условий передаются
+параметрами.
+
 ## Лицензия
 MIT
